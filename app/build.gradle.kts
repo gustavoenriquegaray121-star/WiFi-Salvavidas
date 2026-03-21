@@ -7,6 +7,10 @@ android {
     namespace = "com.gustavo.wifisalvavidas"
     compileSdk = 34
 
+    aaptOptions {
+        crunchPngs = false
+    }
+
     defaultConfig {
         applicationId = "com.gustavo.wifisalvavidas"
         minSdk = 23
