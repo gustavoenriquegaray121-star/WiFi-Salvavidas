@@ -27,17 +27,35 @@
                 android:src="@drawable/logo_wf"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Wi-Fi Salvavidas"
+                android:textColor="#D4AF37"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¡Sin datos? Encuentra ayuda aquí!"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="15sp"
                 android:gravity="center"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💎 v.25 Certified by Altea-Garay"
+                android:textColor="#BB86FC"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapView"
@@ -65,22 +83,22 @@
             <Button
                 android:id="@+id/btnScan"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Escanear Wi-Fi abiertos"
+                android:layout_height="60dp"
+                android:text="📡 Escanear Wi-Fi abiertos"
                 android:background="@drawable/button_blue_glow"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="24dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No nos conectamos automáticamente – Abrimos los ajustes del sistema para tu seguridad."
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
+                android:text="No nos conectamos automáticamente – Abrimos los ajustes del sistema para tu seguridad. No guardamos ni compartimos ninguna información."
+                android:textColor="#AAAAAA"
+                android:textSize="13sp"
                 android:gravity="center"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="24dp" />
 
             <com.google.android.gms.ads.AdView
                 android:id="@+id/adView"
