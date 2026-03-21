@@ -7,10 +7,6 @@ android {
     namespace = "com.gustavo.wifisalvavidas"
     compileSdk = 34
 
-    aaptOptions {
-        crunchPngs = false
-    }
-
     defaultConfig {
         applicationId = "com.gustavo.wifisalvavidas"
         minSdk = 23
@@ -22,6 +18,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isCrunchPngs = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
