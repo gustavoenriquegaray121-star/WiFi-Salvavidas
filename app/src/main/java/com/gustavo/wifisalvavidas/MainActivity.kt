@@ -69,6 +69,10 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+        
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED) {
@@ -91,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             }
             location?.let {
                 val latLng = LatLng(it.latitude, it.longitude)
+                googleMap?.clear() // Limpiamos marcadores viejos para no amontonar
                 googleMap?.addMarker(MarkerOptions().position(latLng).title("Tu ubicación"))
                 googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
             }
@@ -107,27 +112,49 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun scanWiFiNetworks() {
+        // Aseguramos visibilidad del indicador de carga si lo tienes, o limpiamos la lista
         binding.tvNoNetworks.visibility = View.GONE
-        wifiManager.startScan()
+        
+        // Iniciamos el escaneo
+        val success = wifiManager.startScan()
+        
+        // Esperamos un momento para que los resultados se actualicen
         handler.postDelayed({
             val scanResults = wifiManager.scanResults
-            val openNetworks = scanResults.filter {
-                it.capabilities.isEmpty() && it.SSID.isNotBlank()
+            
+            // FILTRO CORREGIDO: Buscamos redes que no tengan protocolos de seguridad conocidos
+            val openNetworks = scanResults.filter { result ->
+                val capabilities = result.capabilities.uppercase()
+                val isOpen = !capabilities.contains("WPA") && 
+                             !capabilities.contains("WEP") && 
+                             !capabilities.contains("SAE") && 
+                             !capabilities.contains("PSK") && 
+                             !capabilities.contains("EAP")
+                
+                isOpen && result.SSID.isNotBlank()
             }
+
             binding.recyclerView.adapter = WiFiAdapter(openNetworks) { level ->
                 getSignalLevel(level)
             }
-            binding.tvNoNetworks.visibility = if (openNetworks.isEmpty()) View.VISIBLE else View.GONE
+
+            if (openNetworks.isEmpty()) {
+                binding.tvNoNetworks.text = "No se detectaron redes abiertas cerca"
+                binding.tvNoNetworks.visibility = View.VISIBLE
+            } else {
+                binding.tvNoNetworks.visibility = View.GONE
+            }
+            
             getLocationAndUpdateMap()
-        }, 2000)
+        }, 1500)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
             scanWiFiNetworks()
         } else {
-            Toast.makeText(this, "Permiso de ubicación necesario", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Permisos necesarios para buscar redes", Toast.LENGTH_SHORT).show()
         }
     }
 
