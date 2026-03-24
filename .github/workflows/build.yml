@@ -25,26 +25,31 @@ jobs:
 
     - name: Generar Keystore
       run: |
+        # Usamos una clave fija de 10 caracteres para evitar errores de longitud y no depender de secretos absurdos
         keytool -genkey -v \
           -keystore app/wifisalvavidas.jks \
           -alias wifisalvavidas \
           -keyalg RSA \
           -keysize 2048 \
           -validity 10000 \
-          -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
-          -keypass "${{ secrets.KEY_PASSWORD }}" \
+          -storepass "altea2026mx" \
+          -keypass "altea2026mx" \
           -dname "CN=Gustavo Garay, OU=Altea-Garay, O=Altea-Garay, L=Garcia, S=Nuevo Leon, C=MX"
 
     - name: Build Release APK and AAB
       run: ./gradlew assembleRelease bundleRelease --stacktrace
+      env:
+        # Aquí es donde el sistema usará el secreto que SÍ importa y que ya protegiste
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-    - name: Sign APK (Esquema V2/V3 para Android Moderno)
+    - name: Sign APK (Esquema V2/V3)
       run: |
-        # Usamos apksigner con comillas para evitar errores de lectura en las contraseñas
-        $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks app/wifisalvavidas.jks \
+        # Buscamos la ruta del apksigner dinámicamente para que no falle por versión
+        APKSIGNER=$(find $ANDROID_HOME/build-tools -name apksigner | sort -r | head -n 1)
+        $APKSIGNER sign --ks app/wifisalvavidas.jks \
           --ks-key-alias wifisalvavidas \
-          --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
-          --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
+          --ks-pass "pass:altea2026mx" \
+          --key-pass "pass:altea2026mx" \
           --out app/build/outputs/apk/release/WiFi-Salvavidas-FINAL.apk \
           app/build/outputs/apk/release/app-release-unsigned.apk
 
@@ -54,8 +59,8 @@ jobs:
           -sigalg SHA256withRSA \
           -digestalg SHA-256 \
           -keystore app/wifisalvavidas.jks \
-          -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
-          -keypass "${{ secrets.KEY_PASSWORD }}" \
+          -storepass "altea2026mx" \
+          -keypass "altea2026mx" \
           app/build/outputs/bundle/release/app-release.aab \
           wifisalvavidas
 
