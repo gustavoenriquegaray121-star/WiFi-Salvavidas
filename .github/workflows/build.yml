@@ -31,8 +31,8 @@ jobs:
           -keyalg RSA \
           -keysize 2048 \
           -validity 10000 \
-          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+          -keypass "${{ secrets.KEY_PASSWORD }}" \
           -dname "CN=Gustavo Garay, OU=Altea-Garay, O=Altea-Garay, L=Garcia, S=Nuevo Leon, C=MX"
 
     - name: Build Release APK and AAB
@@ -40,11 +40,11 @@ jobs:
 
     - name: Sign APK (Esquema V2/V3 para Android Moderno)
       run: |
-        # Usamos apksigner para que el celular reconozca la firma oficial
+        # Usamos apksigner con comillas para evitar errores de lectura en las contraseñas
         $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks app/wifisalvavidas.jks \
           --ks-key-alias wifisalvavidas \
-          --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
-          --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+          --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+          --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
           --out app/build/outputs/apk/release/WiFi-Salvavidas-FINAL.apk \
           app/build/outputs/apk/release/app-release-unsigned.apk
 
@@ -54,8 +54,8 @@ jobs:
           -sigalg SHA256withRSA \
           -digestalg SHA-256 \
           -keystore app/wifisalvavidas.jks \
-          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+          -keypass "${{ secrets.KEY_PASSWORD }}" \
           app/build/outputs/bundle/release/app-release.aab \
           wifisalvavidas
 
