@@ -16,8 +16,9 @@ android {
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // CORRECCIÓN: Ahora el nombre coincide exactamente con tu secreto de GitHub
-        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: ""
+        // CORRECCIÓN COHERENTE: Cambiamos "MAPS_API_KEY" por "GEMINI_API_KEY" 
+        // para que jale la llave de los Secrets que ya protegiste en GitHub.
+        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("GEMINI_API_KEY") ?: "AIzaSyA0yClRXhib6iOfAU5a65elqwcvOZS3fiQ"
     }
 
     buildTypes {
