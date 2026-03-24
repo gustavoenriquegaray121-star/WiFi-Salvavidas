@@ -35,9 +35,23 @@ jobs:
           -keypass ${{ secrets.KEY_PASSWORD }} \
           -dname "CN=Gustavo Garay, OU=Altea-Garay, O=Altea-Garay, L=Garcia, S=Nuevo Leon, C=MX"
 
-    - name: Build Release AAB
-      run: ./gradlew bundleRelease --stacktrace
+    # Cambiamos la orden para que fabrique el APK (assemble) y el AAB (bundle)
+    - name: Build Release APK and AAB
+      run: ./gradlew assembleRelease bundleRelease --stacktrace
 
+    # Firmamos el APK para que lo puedas instalar en tu celular
+    - name: Sign APK
+      run: |
+        jarsigner -verbose \
+          -sigalg SHA256withRSA \
+          -digestalg SHA-256 \
+          -keystore app/wifisalvavidas.jks \
+          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+          -keypass ${{ secrets.KEY_PASSWORD }} \
+          app/build/outputs/apk/release/app-release-unsigned.apk \
+          wifisalvavidas
+
+    # Firmamos el AAB para la Play Store
     - name: Sign AAB
       run: |
         jarsigner -verbose \
@@ -49,8 +63,16 @@ jobs:
           app/build/outputs/bundle/release/app-release.aab \
           wifisalvavidas
 
+    # Subimos el APK (El que vas a instalar para probar)
+    - name: Subir APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: WiFi-Salvavidas-APK-Instalador
+        path: app/build/outputs/apk/release/*.apk
+
+    # Subimos el AAB (El que guardarás para publicar)
     - name: Subir AAB
       uses: actions/upload-artifact@v4
       with:
-        name: WiFi-Salvavidas-AAB
+        name: WiFi-Salvavidas-AAB-Tienda
         path: app/build/outputs/bundle/release/app-release.aab
